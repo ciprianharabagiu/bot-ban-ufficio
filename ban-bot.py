@@ -1,6 +1,24 @@
-import discord
 import os
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import discord
 from discord.ext import commands
+
+# --- SERVER WEB FITTIZIO PER RENDERE FELICE RENDER ---
+class SimpleHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is alive!")
+
+def run_web_server():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(("0.0.0.0", port), SimpleHandler)
+    server.serve_forever()
+
+# Avvia il server web in background prima del bot
+threading.Thread(target=run_web_server, daemon=True).start()
+# ----------------------------------------------------
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -9,7 +27,7 @@ intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# INSERISCI QUI L'ID DEL TUO CANALE TRAPPOLA
+# ID del tuo canale trappola
 TRAP_CHANNEL_ID = 1562519108954751196  
 
 MESSAGE_ID = None
@@ -51,5 +69,5 @@ async def on_message(message):
         except Exception as e:
             print(f"Errore: {e}")
 
-# INSERISCI QUI IL TOKEN DEL TUO BOT TRA LE VIRGOLETTE
+# Avvia il bot usando la variabile d'ambiente impostata su Render
 bot.run(os.getenv("DISCORD_TOKEN"))
