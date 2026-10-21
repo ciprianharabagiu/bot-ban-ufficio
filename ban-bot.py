@@ -4,12 +4,14 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import discord
 from discord.ext import commands
 
-# --- SERVER WEB FITTIZIO PER RENDERE FELICE RENDER ---
+# --- SERVER WEB FITTIZIO (RISPOSTA VUOTA 204 PER EVITARE ERRORI) ---
 class SimpleHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        self.send_response(200)
+        self.send_response(204) # 204 No Content: risponde senza inviare dati pesanti
         self.end_headers()
-        self.wfile.write(b"Bot is alive!")
+
+    def log_message(self, format, *args):
+        pass # Disattiva i log di accesso superflui nel terminale di Render
 
 def run_web_server():
     port = int(os.environ.get("PORT", 10000))
@@ -69,5 +71,4 @@ async def on_message(message):
         except Exception as e:
             print(f"Errore: {e}")
 
-# Avvia il bot usando la variabile d'ambiente impostata su Render
 bot.run(os.getenv("DISCORD_TOKEN"))
